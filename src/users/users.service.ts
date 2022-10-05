@@ -16,8 +16,8 @@ export class UsersService {
 		return this.users.find(x => x.id == id);
 	}
 
-	createUser(id : number, name : string, age : number, role : string){
-		this.users.push(new User(name, id, age, role));
+	createUser(newUser : User){
+		this.users.push(newUser);
 	}
 
 	updateUserById(id : number, age : number, role : string){

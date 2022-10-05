@@ -14,7 +14,7 @@ export class UsersController {
 
 	@Post()
 	createUser(@Body() body) : User[]{
-		this.usersService.createUser(body.id, body.name, body.age, body.role);
+		this.usersService.createUser(body);
 		return this.usersService.getUsers();
 	}
 
