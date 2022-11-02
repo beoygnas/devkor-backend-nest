@@ -1,40 +1,46 @@
-import { Injectable } from '@nestjs/common';
-import {User} from './User'
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { CreateUserDto, UpdateUserDto } from './users.dto';
+import {Users} from './users.entity'
 
 
-@Injectable()
+@Injectable() //다음 class는 controller로 주입될 수 있는
 export class UsersService {
-
 	
-	users : User[] = [new User('sangyeob', 1, 24, "junior"), new User('seokwon', 2, 23 ,'junior'), new User('hanjoo', 3, 24, 'junior'), new User('seokmin', 4, 24, 'senior')];
+	constructor(
+		@InjectRepository(Users)
+		private usersRepository: Repository<Users>,
+	) {}	
 
-	getUsers(): User[] {
-		return this.users;
+	async getUsers(): Promise<Users[]> {
+		return await this.usersRepository.find();
 	}
 
-	getUserById(id : number) : User{
-		return this.users.find(x => x.id == id);
+	async getUserById(id : number) : Promise<Users>{
+		return await this.usersRepository.findOneBy({id});
 	}
 
-	createUser(newUser : User){
-		this.users.push(newUser);
+	async createUser(createUserDto : CreateUserDto){
+		await this.usersRepository.save(createUserDto);
+		return await this.usersRepository.find();
 	}
 
-	updateUserById(id : number, age : number, role : string){
-		const idx = this.users.findIndex(x => x.id == id);
-		if(idx > -1){
-			this.users[idx].age = age;
-			this.users[idx].role = role;
+	async updateUserById(id : number, updateUserDto : UpdateUserDto){
+
+		const {age, role} = updateUserDto;
+		const user = await this.usersRepository.update({id},{age, role});
+		if ((user).affected !== 1) {
+			throw new NotFoundException('해당 ID의 유저가 없습니다.');
 		}
-		
+		return await this.usersRepository.find();
 	}
 
-	deleteUserById(id : number){
-		const idx = this.users.findIndex(x => x.id == id);
-		if(idx > -1) this.users.splice(idx, 1);
+	async deleteUserById(id : number){		
+		const user = await this.usersRepository.delete(id);
+		if (user.affected === 0) {
+			throw new NotFoundException('유저가 존재하지 않습니다.');
+		}	
+		return await this.usersRepository.find();
 	}
-
-
-
-
-}
+}	
