@@ -12,7 +12,7 @@ import { Users } from './users/users.entity';
       type: 'postgres',
       host: 'localhost',
       port: 5432,
-      username: 'sangyeob',
+      username: 'root',
       password: '9240',
       database: 'nestjsdb',
       entities: [Users],
