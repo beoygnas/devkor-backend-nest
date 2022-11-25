@@ -3,20 +3,20 @@ import { UsersService } from './users.service';
 import { Repository } from 'typeorm';
 import {Users} from './users.entity'
 import { createSecureServer } from 'http2';
-import { CreateUserDto, UpdateUserDto } from './users.dto';
+import { SignupUserDto, LoginUserDto } from './users.dto';
 
 @Controller('users')
 export class UsersController {
 	constructor(private readonly usersService: UsersService){}
 
-	@Get()
-	getUsers() : Promise<Users[]>{
-		return this.usersService.getUsers();
+	@Post('/signup')
+	signUpUser(@Body() signupUserDto : SignupUserDto) : Promise<Map<string, string>>{
+		return this.usersService.signUpUser(signupUserDto);
 	}
 
-	@Post()
-	createUser(@Body() createUserDto : CreateUserDto) : Promise<Users[]>{
-		return this.usersService.createUser(createUserDto);
+	@Post('/login')
+	LoginUpUser(@Body() loginUserDto : LoginUserDto) : Promise<Map<string, string>>{
+		return this.usersService.loginUser(loginUserDto);
 	}
 
 	@Get('/:id')
@@ -24,14 +24,19 @@ export class UsersController {
 		return this.usersService.getUserById(id);
 	}
 
-	@Delete('/:id')
-	deleteUserById(@Param('id') id : number): Promise<Users[]>{
-		return this.usersService.deleteUserById(id);
+	@Get('/:email')
+	getUserByEmail(@Param('email') email : string): Promise<Users>{
+		return this.usersService.getUserByEmail(email);
 	}
 
+	// @Delete('/:id')
+	// deleteUserById(@Param('id') id : number): Promise<Users[]>{
+	// 	return this.usersService.deleteUserById(id);
+	// }
 
-	@Put('/:id')
-	updateUserById(@Param('id') id : number, @Body() updateUserDto : UpdateUserDto) : Promise<Users[]>{
-		return this.usersService.updateUserById(id, updateUserDto);
-	}
+
+	// @Put('/:id')
+	// updateUserById(@Param('id') id : number, @Body() loginUserDto : LoginUserDto) : Promise<Users[]>{
+	// 	return this.usersService.updateUserById(id, loginUserDto);
+	// }
 }
